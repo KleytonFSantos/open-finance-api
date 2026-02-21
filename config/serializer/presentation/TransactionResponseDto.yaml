@@ -1,0 +1,54 @@
+App\DTO\Presentation\Pluggy\Response\TransactionResponseDto:
+    properties:
+        id:
+            type: string
+        description:
+            type: string
+        descriptionRaw:
+            type: string
+        currencyCode:
+            type: string
+        amount:
+            type: float
+        amountInAccountCurrency:
+            type: float
+        date:
+            type: string
+        category:
+            type: string
+        categoryId:
+            type: string
+        balance:
+            type: float
+        accountId:
+            type: string
+        providerCode:
+            type: string
+        status:
+            type: string
+        paymentData:
+            type: array
+        type:
+            type: string
+        operationType:
+            type: string
+        creditCardMetadata:
+            type: array
+        acquirerData:
+            type: array
+        merchant:
+            type: array
+        providerId:
+            type: string
+        order:
+            type: integer
+        createdAt:
+            type: string
+        updatedAt:
+            type: string
+        accountType:
+            type: string
+        accountName:
+            type: string
+        accountNumber:
+            type: string

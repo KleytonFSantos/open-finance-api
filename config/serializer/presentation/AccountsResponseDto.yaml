@@ -1,0 +1,32 @@
+App\DTO\Presentation\Pluggy\Response\AccountsResponseDto:
+    properties:
+        id:
+            type: string
+        type:
+            type: string
+        subtype:
+            type: string
+        name:
+            type: string
+        balance:
+            type: float
+        currencyCode:
+            type: string
+        itemId:
+            type: string
+        number:
+            type: string
+        createdAt:
+            type: string
+        updatedAt:
+            type: string
+        marketingName:
+            type: string
+        taxNumber:
+            type: string
+        owner:
+            type: string
+        bankData:
+            type: array
+        creditData:
+            type: array

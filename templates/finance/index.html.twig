@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Dashboard</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/style.css">
+    <!-- Custom CSS -->
+    <link href="{{ asset('css/finance.css') }}" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-wallet me-2"></i>Open Finances</a>
+        </div>
+    </nav>
+
+    <div class="container pb-5">
+        <!-- Filter Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form id="filter-form" class="row g-3 align-items-end">
+                            <div class="col-md-4">
+                                <label for="from-month" class="form-label">Select Month</label>
+                                <input type="text" class="form-control bg-white" id="from-month" name="from" placeholder="Select Month...">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="transaction-type" class="form-label">Transaction Type</label>
+                                <select class="form-select" id="transaction-type">
+                                    <option value="all">All Transactions</option>
+                                    <option value="checking">Checking Account</option>
+                                    <option value="credit_card">Credit Card</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-filter me-2"></i>Filter
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="icon-box bg-soft-primary me-3">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted mb-1">Total Balance</h6>
+                            <h3 class="mb-0" id="total-balance">R$ 0,00</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="icon-box bg-soft-success me-3">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted mb-1">Total Income</h6>
+                            <h3 class="mb-0 text-success" id="total-income">R$ 0,00</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="icon-box bg-soft-danger me-3">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div>
+                            <h6 class="text-muted mb-1">Total Expenses</h6>
+                            <h3 class="mb-0 text-danger" id="total-expense">R$ 0,00</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Left Column: Categories & Chart -->
+            <div class="col-lg-4 mb-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">Expenses by Category</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">Category Breakdown</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush" id="category-list">
+                            <!-- Categories will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Recent Transactions -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Recent Transactions</h5>
+                        <span class="badge bg-primary rounded-pill" id="tx-count">0</span>
+                    </div>
+                    <div class="card-body">
+                        <div id="transactions-list">
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Flatpickr -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ asset('js/finance.js') }}"></script>
+</body>
+</html>
