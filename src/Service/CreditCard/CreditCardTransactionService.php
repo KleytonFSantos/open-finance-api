@@ -10,13 +10,11 @@ use App\Interface\Account\AccountTransactionServiceInterface;
 use App\Interface\CreditCard\CreditCardTransactionServiceInterface;
 use DateTime;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class CreditCardTransactionService implements CreditCardTransactionServiceInterface
 {
     const string CREDIT_CARD_ACCOUNT_TYPE = 'CREDIT_CARD';
 
-    private HttpClientInterface $client;
     private string $apiKey;
 
     public function __construct(
@@ -26,7 +24,6 @@ final class CreditCardTransactionService implements CreditCardTransactionService
         private readonly SerializerInterface $serializer,
         private readonly CreditCardTransactionFromAccountsAssembler $creditCardTransactionAssembler
     ) {
-        $this->client = $this->pluggyClient->getClient();
         $this->apiKey = $this->pluggyApiKeyService->get();
     }
 
@@ -63,7 +60,7 @@ final class CreditCardTransactionService implements CreditCardTransactionService
 
     private function fetchTransactions(string $accountId, ?string $from, string $to): array
     {
-        $response = $this->client->request('GET', '/transactions', [
+        $response = $this->pluggyClient->get('/transactions', [
             'headers' => [
                 'X-API-KEY' => $this->apiKey,
                 'accept'    => 'application/json',

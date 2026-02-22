@@ -2,9 +2,7 @@
 
 namespace App\Client;
 
-use Symfony\Component\HttpClient\HttpClient;
-
-class PluggyApiKeyService
+readonly class PluggyApiKeyService
 {
     public function __construct(
         private string $clientId,
@@ -15,8 +13,7 @@ class PluggyApiKeyService
 
     public function get(): string
     {
-        $client = $this->client->getClient();
-        $request = $client->request('POST', '/auth', [
+        $request = $this->client->post('/auth', [
             'body' => [
                 'clientId' => $this->clientId,
                 'clientSecret' => $this->clientSecret,

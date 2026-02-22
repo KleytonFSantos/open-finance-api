@@ -20,10 +20,9 @@ readonly class TransactionService implements TransactionServiceInterface
 
     public function getTransactions(?string $from = null): array
     {
-        $client = $this->pluggyClient->getClient();
         $apiKey = $this->pluggyApiKeyService->get();
 
-        $response = $client->request('GET', '/transactions', [
+        $response = $this->pluggyClient->get('/transactions', [
             'headers' => [
                 'X-API-KEY' => $apiKey,
                 'accept' => 'application/json',
