@@ -23,25 +23,21 @@ readonly class TransactionService implements TransactionServiceInterface
         $client = $this->pluggyClient->getClient();
         $apiKey = $this->pluggyApiKeyService->get();
 
-        try {
-            $response = $client->request('GET', '/transactions', [
-                'headers' => [
-                    'X-API-KEY' => $apiKey,
-                    'accept' => 'application/json',
-                ],
-                'query' => [
-                    'accountId' => $this->accountId,
-                    'from' => $from,
-                ],
-            ]);
+        $response = $client->request('GET', '/transactions', [
+            'headers' => [
+                'X-API-KEY' => $apiKey,
+                'accept' => 'application/json',
+            ],
+            'query' => [
+                'accountId' => $this->accountId,
+                'from' => $from,
+            ],
+        ]);
 
-            return $this->serializer->deserialize(
-                json_encode($response->toArray()['results'] ?? []),
-                TransactionResponseDto::class . '[]',
-                'json'
-            );
-        } catch (\Throwable $e) {
-            dd($e);
-        }
+        return $this->serializer->deserialize(
+            json_encode($response->toArray()['results'] ?? []),
+            TransactionResponseDto::class . '[]',
+            'json'
+        );
     }
 }
