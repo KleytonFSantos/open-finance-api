@@ -2,23 +2,29 @@
 
 namespace App\Service\CreditCard;
 
+use App\Assembler\Pluggy\Response\CreditCardTransactionFromAccountsAssembler;
 use App\Client\PluggyApiKeyService;
 use App\Client\PluggyClient;
-use App\DTO\Presentation\Pluggy\Response\AccountsResponseDto;
+use App\DTO\Presentation\Pluggy\Response\TransactionResponseDto;
+use App\Interface\Account\AccountTransactionServiceInterface;
 use App\Interface\CreditCard\CreditCardTransactionServiceInterface;
+use DateTime;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class CreditCardTransactionService implements CreditCardTransactionServiceInterface
 {
+    const string CREDIT_CARD_ACCOUNT_TYPE = 'CREDIT_CARD';
+
     private HttpClientInterface $client;
     private string $apiKey;
 
     public function __construct(
-        private readonly string $itemId,
+        private readonly AccountTransactionServiceInterface $accountTransactionService,
         private readonly PluggyApiKeyService $pluggyApiKeyService,
         private readonly PluggyClient $pluggyClient,
-        private readonly SerializerInterface $serializer
+        private readonly SerializerInterface $serializer,
+        private readonly CreditCardTransactionFromAccountsAssembler $creditCardTransactionAssembler
     ) {
         $this->client = $this->pluggyClient->getClient();
         $this->apiKey = $this->pluggyApiKeyService->get();
@@ -26,88 +32,65 @@ final class CreditCardTransactionService implements CreditCardTransactionService
 
     public function getTransactions(?string $from = null): array
     {
-        $allAccounts = $this->getAllAccounts();
-        $creditCards = [];
+        $creditCards = array_filter(
+            $this->accountTransactionService->getAllAccounts(),
+            fn($account) => $account->getSubtype() === self::CREDIT_CARD_ACCOUNT_TYPE
+        );
 
-        foreach ($allAccounts as $account) {
-            if (($account->type ?? '') === 'CREDIT_CARD' || ($account->subtype ?? '') === 'CREDIT_CARD') {
-                $creditCards[] = $account;
-            }
+        if (empty($creditCards)) {
+            return [];
         }
+
+        $fromDate = new DateTime($from ?? 'now');
+        $toDate = (clone $fromDate)->modify('last day of this month');
+        $formattedTo = $toDate->format('Y-m-d');
 
         $allTransactions = [];
 
         foreach ($creditCards as $cardData) {
-            $query = [
-                'accountId' => $cardData->id,
-            ];
+            $results = $this->fetchTransactions($cardData->getId(), $from, $formattedTo);
+            $transactions = $this->deserializeTransactions($results);
 
-            if ($from) {
-                $query['from'] = $from;
-
-                $fromDate = new \DateTime($from);
-                $toDate = (clone $fromDate)->modify('last day of this month');
-                $query['to'] = $toDate->format('Y-m-d');
-
+            foreach ($transactions as $t) {
+                ($this->creditCardTransactionAssembler)($t, $cardData);
             }
 
-            try {
-                $response = $this->client->request('GET', '/transactions', [
-                    'headers' => [
-                        'X-API-KEY' => $this->apiKey,
-                        'accept' => 'application/json',
-                    ],
-                    'query' => $query,
-                ]);
-
-                $transactions = $response->toArray()['results'] ?? [];
-
-                foreach ($transactions as &$t) {
-                    $t['accountType'] = 'CREDIT_CARD';
-                    $t['accountName'] = $cardData->name;
-                    $t['accountNumber'] = $cardData->number;
-                    $t['creditCardMetadata'] = $cardData->creditData ?? null;
-                    
-                    if (isset($t['creditCardMetadata']['installmentNumber']) && isset($t['creditCardMetadata']['totalInstallments'])) {
-                        $installmentInfo = sprintf(
-                            ' (%d/%d)', 
-                            $t['creditCardMetadata']['installmentNumber'], 
-                            $t['creditCardMetadata']['totalInstallments']
-                        );
-                        $t['description'] .= $installmentInfo;
-                    }
-                }
-
-                $allTransactions = array_merge($allTransactions, $transactions);
-            } catch (\Exception $e) {
-                continue;
-            }
+            array_push($allTransactions, ...$transactions);
         }
 
         return $allTransactions;
     }
 
-    /**
-     * @return AccountsResponseDto[]
-     */
-    private function getAllAccounts(): array
+    private function fetchTransactions(string $accountId, ?string $from, string $to): array
     {
-        try {
-            $response = $this->client->request('GET', '/accounts', [
-                'headers' => [
-                    'X-API-KEY' => $this->apiKey,
-                    'accept' => 'application/json',
-                ],
-                'query' => ['itemId' => $this->itemId],
-            ]);
+        $response = $this->client->request('GET', '/transactions', [
+            'headers' => [
+                'X-API-KEY' => $this->apiKey,
+                'accept'    => 'application/json',
+            ],
+            'query' => [
+                'accountId' => $accountId,
+                'from'      => $from,
+                'to'        => $to,
+            ],
+        ]);
 
-            return $this->serializer->deserialize(
-                json_encode($response->toArray()['results'] ?? []),
-                AccountsResponseDto::class . '[]',
-                'json'
-            );
-        } catch (\Exception $e) {
-            return [];
-        }
+        $results = $response->toArray()['results'] ?? [];
+
+        return array_map(function (array $item) {
+            if (isset($item['creditCardMetadata'])) {
+                $item['creditCardMetadata'] = [$item['creditCardMetadata']];
+            }
+            return $item;
+        }, $results);
+    }
+
+    private function deserializeTransactions(array $results): array
+    {
+        return $this->serializer->deserialize(
+            json_encode($results),
+            TransactionResponseDto::class . '[]',
+            'json'
+        );
     }
 }

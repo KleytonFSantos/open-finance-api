@@ -1,0 +1,36 @@
+App\DTO\Presentation\Pluggy\Response\CreditCardMetadataResponseDto:
+    properties:
+        purchaseDate:
+            type: string
+        totalInstallments:
+            type: int
+        installmentNumber:
+            type: int
+        payeeMCC:
+            type: int
+        level:
+            type: string
+        brand:
+            type: string
+        balanceCloseDate:
+            type: string
+        balanceDueDate:
+            type: string
+        availableCreditLimit:
+            type: float
+        balanceForeignCurrency:
+            type: float
+        minimumPayment:
+            type: float
+        creditLimit:
+            type: float
+        isLimitFlexible:
+            type: boolean
+        holderType:
+            type: string
+        status:
+            type: string
+        disaggregatedCreditLimits:
+            type: array<App\DTO\Presentation\Pluggy\Response\DisaggregatedCreditLimitsResponseDto>
+        additionalCards:
+            type: array

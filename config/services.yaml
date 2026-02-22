@@ -35,7 +35,7 @@ services:
       arguments:
         $clientId: '%env(PLUGGY_CLIENT_ID)%'
         $clientSecret: '%env(PLUGGY_CLIENT_SECRET)%'
-    App\Service\CreditCard\CreditCardTransactionService:
+    App\Service\Account\AccountTransactionService:
       arguments:
         $itemId: '%env(PLUGGY_ITEM_ID)%'
     App\Service\Finance\TransactionService:

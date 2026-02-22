@@ -1,0 +1,26 @@
+App\DTO\Presentation\Pluggy\Response\DisaggregatedCreditLimitsResponseDto:
+    properties:
+        usedAmount:
+            type: float
+        limitAmount:
+            type: float
+        availableAmount:
+            type: float
+        isLimitFlexible:
+            type: boolean
+        consolidationType:
+            type: string
+        creditLineLimitType:
+            type: string
+        identificationNumber:
+            type: string
+        usedAmountCurrencyCode:
+            type: string
+        limitAmountCurrencyCode:
+            type: string
+        availableAmountCurrencyCode:
+            type: string
+        lineName:
+            type: string
+        lineNameAdditionalInfo:
+            type: string

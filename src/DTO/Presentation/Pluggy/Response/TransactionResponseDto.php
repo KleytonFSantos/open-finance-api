@@ -2,6 +2,9 @@
 
 namespace App\DTO\Presentation\Pluggy\Response;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
 class TransactionResponseDto
 {
     public string $id;
@@ -20,7 +23,8 @@ class TransactionResponseDto
     public ?array $paymentData;
     public string $type;
     public ?string $operationType;
-    public ?array $creditCardMetadata;
+    /** @var Collection<CreditCardMetadataResponseDto> | null */
+    public ?Collection $creditCardMetadata;
     public ?array $acquirerData;
     public ?array $merchant;
     public ?string $providerId;
@@ -31,10 +35,15 @@ class TransactionResponseDto
     public ?string $accountName = null;
     public ?string $accountNumber = null;
 
-      public function getId(): string
-      {
-          return $this->id;
-      }
+    public function __construct()
+    {
+        $this->creditCardMetadata = new ArrayCollection();
+    }
+
+    public function getId(): string
+    {
+        return $this->id;
+    }
 
     public function getDescription(): string
     {
@@ -111,9 +120,21 @@ class TransactionResponseDto
         return $this->operationType;
     }
 
-    public function getCreditCardMetadata(): ?array
+    public function getCreditCardMetadata(): ?Collection
     {
         return $this->creditCardMetadata;
+    }
+
+    public function addCreditCardMetadata(CreditCardMetadataResponseDto $creditCardMetadata): void
+    {
+        if (!$this->creditCardMetadata->contains($creditCardMetadata)) {
+            $this->creditCardMetadata->add($creditCardMetadata);
+        }
+    }
+
+    public function removeCreditCardMetadata(CreditCardMetadataResponseDto $creditCardMetadata): void
+    {
+        $this->creditCardMetadata->removeElement($creditCardMetadata);
     }
 
     public function getAcquirerData(): ?array
@@ -151,13 +172,28 @@ class TransactionResponseDto
         return $this->accountType;
     }
 
+    public function setAccountType(?string $accountType): void
+    {
+        $this->accountType = $accountType;
+    }
+
     public function getAccountName(): ?string
     {
         return $this->accountName;
     }
 
+    public function setAccountName(string $accountName): void
+    {
+        $this->accountName = $accountName;
+    }
+
     public function getAccountNumber(): ?string
     {
         return $this->accountNumber;
+    }
+
+    public function setAccountNumber(?string $accountNumber): void
+    {
+        $this->accountNumber = $accountNumber;
     }
 }
