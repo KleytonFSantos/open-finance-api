@@ -2,12 +2,16 @@
 
 namespace App\Client;
 
+use App\DTO\Presentation\Pluggy\Response\ApiKeyResponseDto;
+use Symfony\Component\Serializer\SerializerInterface;
+
 readonly class PluggyApiKeyService
 {
     public function __construct(
         private string $clientId,
         private string $clientSecret,
-        private PluggyClient $client
+        private PluggyClient $client,
+        private SerializerInterface $serializer
     ) {
     }
 
@@ -20,6 +24,13 @@ readonly class PluggyApiKeyService
             ]
         ]);
 
-        return json_decode($request->getContent(), 1)['apiKey'];
+        /** @var ApiKeyResponseDto $response */
+        $response = $this->serializer->deserialize(
+            $request->getContent(),
+            ApiKeyResponseDto::class,
+            'json'
+        );
+
+        return $response->getApiKey();
     }
 }

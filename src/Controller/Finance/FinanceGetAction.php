@@ -19,9 +19,9 @@ readonly class FinanceGetAction
     public function __invoke(Request $request): JsonResponse
     {
         $from = $request->query->get('from');
-        
+
         return new JsonResponse(
-            $this->service->getTransactions($from),
+            $this->service->getTransactions(from: $from),
             Response::HTTP_OK,
         );
     }
