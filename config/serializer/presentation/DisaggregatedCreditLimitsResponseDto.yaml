@@ -1,4 +1,4 @@
-App\DTO\Presentation\Pluggy\Response\DisaggregatedCreditLimitsResponseDto:
+App\CreditCard\DTO\Presentation\Pluggy\Response\DisaggregatedCreditLimitsResponseDto:
     properties:
         usedAmount:
             type: float

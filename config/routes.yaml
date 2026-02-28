@@ -1,8 +1,19 @@
 controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
+    resource: ../src/
     type: attribute
     prefix: /api
+    exclude:
+        - ../src/DependencyInjection/
+        - ../src/Entity/
+        - ../src/Kernel.php
+        - ../src/Tests/
+        - ../src/DTO/
+        - ../src/Interface/
+        - ../src/Repository/
+        - ../src/Service/
+        - ../src/Serializer/
+        - ../src/Security/
+        - ../src/Client/
+
 api_login_check:
   path: '/login_check'

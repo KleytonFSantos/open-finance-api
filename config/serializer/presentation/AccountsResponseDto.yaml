@@ -1,4 +1,4 @@
-App\DTO\Presentation\Pluggy\Response\AccountsResponseDto:
+App\Account\DTO\Presentation\Pluggy\Response\AccountsResponseDto:
     properties:
         id:
             type: string

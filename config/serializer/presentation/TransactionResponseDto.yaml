@@ -1,4 +1,4 @@
-App\DTO\Presentation\Pluggy\Response\TransactionResponseDto:
+App\Finance\DTO\Presentation\Pluggy\Response\TransactionResponseDto:
     properties:
         id:
             type: string
@@ -33,7 +33,7 @@ App\DTO\Presentation\Pluggy\Response\TransactionResponseDto:
         operationType:
             type: string
         creditCardMetadata:
-            type: Doctrine\Common\Collections\ArrayCollection<App\DTO\Presentation\Pluggy\Response\CreditCardMetadataResponseDto>
+            type: array<App\Finance\DTO\Presentation\Pluggy\Response\CreditCardMetadataResponseDto>
         acquirerData:
             type: array
         merchant:

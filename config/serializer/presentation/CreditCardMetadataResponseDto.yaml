@@ -1,4 +1,4 @@
-App\DTO\Presentation\Pluggy\Response\CreditCardMetadataResponseDto:
+App\CreditCard\DTO\Presentation\Pluggy\Response\CreditCardMetadataResponseDto:
     properties:
         purchaseDate:
             type: string
@@ -31,6 +31,6 @@ App\DTO\Presentation\Pluggy\Response\CreditCardMetadataResponseDto:
         status:
             type: string
         disaggregatedCreditLimits:
-            type: array<App\DTO\Presentation\Pluggy\Response\DisaggregatedCreditLimitsResponseDto>
+            type: array<App\CreditCard\DTO\Presentation\Pluggy\Response\DisaggregatedCreditLimitsResponseDto>
         additionalCards:
             type: array

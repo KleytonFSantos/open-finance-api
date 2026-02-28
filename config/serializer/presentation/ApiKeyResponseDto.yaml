@@ -1,4 +1,4 @@
-App\DTO\Presentation\Pluggy\Response\ApiKeyResponseDto:
+App\Account\DTO\Presentation\Pluggy\Response\ApiKeyResponseDto:
     properties:
         apiKey:
             type: string
